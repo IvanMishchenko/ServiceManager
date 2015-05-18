@@ -21,28 +21,28 @@ namespace ServicesManager
         }
 
 
-        public async Task ProccessMachines(bool isNeedToRun)
+        public async Task ProccessMachines(bool isNeedToStart)
         {
             Console.WriteLine("Started Proccessing");
 
-            var allMachinesProccessors = _machineNames.Select(m => Task.Run(() => ProccessMachine(m, isNeedToRun)));
+            var allMachinesProccessors = _machineNames.Select(m => Task.Run(() => ProccessMachineAsync(m, isNeedToStart)));
             await Task.WhenAll(allMachinesProccessors);
         }
 
-        private async Task ProccessMachine(string machineName, bool isNeedToRun)
+        private async Task ProccessMachineAsync(string machineName, bool isNeedToStart)
         {
-            var services = await GetServicesFromMachineAsync(machineName);
+            var services = GetServicesFromMachine(machineName);
 
             var tasks =
                     services.Select(
                         x => Task.Run(() =>
-                            ProcessServiceAsync(x, isNeedToRun,
+                            ProcessServiceAsync(x, isNeedToStart,
                                 new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token)));
 
             await Task.WhenAll(tasks);
         }
 
-        private async Task<List<ServiceController>> GetServicesFromMachineAsync(string machineName)
+        private IEnumerable<ServiceController> GetServicesFromMachine(string machineName)
         {
             Console.WriteLine("\tRetriving services from {0}", machineName);
 
@@ -106,6 +106,8 @@ namespace ServicesManager
                         return;
                     }
                 }
+
+                await Task.Delay(TimeSpan.FromSeconds(1), token);
             }
         }
     }

@@ -16,12 +16,12 @@ namespace ServicesManager
         {
             Console.WriteLine("1 -> Run");
             Console.WriteLine("2 -> Stop");
-            bool isNeedToRun = Console.ReadLine() == "1";
+            bool isNeedToStart = Console.ReadLine() == "1";
 
             var logger = new ServiceLogger();
 
             var serviceManager = new ServiceManager(MachineNames, ServiceName, logger);
-            serviceManager.ProccessMachines(isNeedToRun).Wait();
+            serviceManager.ProccessMachines(isNeedToStart).Wait();
 
             logger.ToConsole();
 
